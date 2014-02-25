@@ -22,7 +22,7 @@
 
     <script src="vendor/jquery/dist/jquery.js"></script>
     <script src="https://api.trello.com/1/client.js?key=01d542b2da7985e310301d7e1cbe5ec7"></script>
-    <script src="vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="vendor/bootstrap/dist/js/bootstrap.js"></script>
     <script src="vendor/react/JSXTransformer.js"></script>
     <script src="vendor/react/react.js"></script>
     <script src="vendor/microevent/microevent-debug.js"></script>
@@ -33,7 +33,7 @@
   <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
-          <p class="loggedIn navbar-text pull-right">
+          <p class="loggedIn navbar-text pull-right" style="display: none;">
           Logged in to Trello as <span class="fullName"></span>
           <a id="disconnect" class="btn btn-primary btn-small" style="margin-top: 0">Revoke Access</a>
           </p>
@@ -45,14 +45,14 @@
       <div class="loggedOut">
         <div class="jumbotron">
           <h1>Save your Trello board as a list</h1>
-          <p>Nothing fancy, just an HTML bullet list you can open with MS Word.</p>
+          <p></p>
           <div class="loggedOut pullright"><a id="connectLink" class="btn btn-primary btn-large">Connect to Trello &raquo;</a></div>
         </div>
       </div>
 
       <div class="row-fluid loggedIn">
         <div class="col-md-3">
-          <div id="boardList" class="well sidebar-nav">
+          <div id="boardList" class="well sidebar-nav" style="display:none;">
           </div>
         </div>
         <div class="col-md-9">
@@ -63,7 +63,7 @@
               <input class="btn btn-large btn-success" type="submit" name="submit" value ="Save as HTML">
             </form>
           </div>
-          <div id="output" style="margin-bottom: 30px">
+          <div id="output" style="margin-bottom: 30px;">
             <div class="hero-unit">
               <h1>Welcome <span class="fullName"></span>, select board to view</h1>
             </div>

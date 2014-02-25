@@ -1,11 +1,16 @@
 /**
 * @jsx React.DOM
 */
+var isLoggedIn = Trello.authorized();
+if (isLoggedIn) {
+  initialize();
+}
+else {
+  Trello.authorize({ interactive:false, success: initialize });
+}
 
-Trello.authorize({ interactive:false, success: initialize });
 
 $(function() {
-
   $("#connectLink").click(function(){
     Trello.authorize({
       type: "popup",
@@ -14,33 +19,34 @@ $(function() {
     })
   });
 
+  $('#disconnect').on('click',function() {
+     Trello.deauthorize();
+     updateLoggedIn();
+  });
+
 });
 
-$('#disconnect').on('click',function() {
-   Trello.deauthorize();
-   updateLoggedIn();
-});
-
-function updateLoggedIn() {
-  var isLoggedIn = Trello.authorized();
-
+function updateLoggedIn(isLoggedIn) {
   if (isLoggedIn){
     console.log('logged in');
     $(".loggedIn").show();
     $(".loggedOut").hide();
+    $('#boardList').show();
   } else {
     console.log('not logged in');
     $(".loggedIn").hide();
     $(".loggedOut").show();
+    $('#boardList').hide();
   }
-  $("#boardList").empty();
+  //$("#boardList").empty();
 }
 
 function initialize() {
-  updateLoggedIn();
   Trello.members.get("me", function(member){
-      $(".fullName").text(member.fullName);
-  });
+    $(".fullName").text(member.fullName);
+    updateLoggedIn(Trello.authorized());
+  },
+  function() { debugger; });
 
   var BoardBox  = React.createClass({
     getInitialState: function() {
@@ -143,7 +149,7 @@ function initialize() {
   var CheckLists = React.createClass({
     render: function() {
       var checklists = this.props.checklists.map(function(checklist){
-        return <CheckList checklist={checklist}/>;
+        return <CheckList key={checklist.id} checklist={checklist}/>;
       });
       return (
         <div className="checklists">
@@ -156,7 +162,7 @@ function initialize() {
   var CheckList = React.createClass({
     render: function() {
       var checklist = this.props.checklist.checkItems.map(function(checkItem) {
-        return <CheckItem item={checkItem}/>;
+        return <CheckItem key={checkItem.id} item={checkItem}/>;
       });
       return (
         <div className="checklist">
@@ -172,7 +178,7 @@ function initialize() {
       return (
         <div className="checkbox">
           <label>
-            <input type="checkbox" checked={checked}/>
+            <input type="checkbox" defaultChecked={checked}/>
             {this.props.item.name}
           </label>
         </div>
