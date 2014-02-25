@@ -16,7 +16,32 @@ $(function() {
 
 });
 
+$('#disconnect').on('click',function() {
+   Trello.deauthorize();
+   updateLoggedIn();
+});
+
+function updateLoggedIn() {
+  var isLoggedIn = Trello.authorized();
+
+  if (isLoggedIn){
+    console.log('logged in');
+    $(".loggedIn").show();
+    $(".loggedOut").hide();
+  } else {
+    console.log('not logged in');
+    $(".loggedIn").hide();
+    $(".loggedOut").show();
+  }
+  $("#boardList").empty();
+}
+
 function initialize() {
+  updateLoggedIn();
+  Trello.members.get("me", function(member){
+      $(".fullName").text(member.fullName);
+  });
+
   var BoardBox  = React.createClass({
     getInitialState: function() {
       return {boards: []};
