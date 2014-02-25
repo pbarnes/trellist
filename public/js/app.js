@@ -67,7 +67,7 @@ function initialize() {
   var BoardList = React.createClass({
     render: function() {
       var boardNodes = this.props.boards.map(function (board) {
-        return <Board id={board.id} name={board.name}></Board>;
+        return <Board key={board.id} id={board.id} name={board.name}></Board>;
       }.bind(this));
       return (
         <div className="boardList">
@@ -95,7 +95,7 @@ function initialize() {
           if (card.idList === list.id) return card;
         });
         if (cards.length > 0) {
-          return <List name={list.name} cards={cards}></List>;
+          return <List key={list.id} name={list.name} cards={cards} checklists={this.props.board.checklists}></List>;
         } else {
           return;
         }
@@ -112,8 +112,11 @@ function initialize() {
   var List = React.createClass({
     render: function() {
       var cardNodes = this.props.cards.map(function(card) {
-        return <Card name={card.name} desc={card.desc}></Card>;
-      });
+        var checklists = this.props.checklists.filter(function(checklist) {
+          if (checklist.idCard === card.id) return checklist;
+        });
+        return <Card key={card.id} name={card.name} desc={card.desc} checklists={checklists}></Card>;
+      }.bind(this));
       return (
         <ul className="card nodes">
           <h2>{this.props.name}</h2>
@@ -126,11 +129,53 @@ function initialize() {
   var Card = React.createClass({
     render: function() {
       var preStyle = "desc"+ (this.props.desc ? '' : ' none');
+      var html = marked(this.props.desc);
       return (
         <li>
           <div className="name">{this.props.name}</div>
-          <pre className={preStyle}>{this.props.desc}</pre>
+          <div className={preStyle} dangerouslySetInnerHTML={{__html:html }}/>
+          <CheckLists checklists={this.props.checklists}/>
         </li>
+      );
+    }
+  });
+
+  var CheckLists = React.createClass({
+    render: function() {
+      var checklists = this.props.checklists.map(function(checklist){
+        return <CheckList checklist={checklist}/>;
+      });
+      return (
+        <div className="checklists">
+          {checklists}
+        </div>
+      );
+    }
+  });
+
+  var CheckList = React.createClass({
+    render: function() {
+      var checklist = this.props.checklist.checkItems.map(function(checkItem) {
+        return <CheckItem item={checkItem}/>;
+      });
+      return (
+        <div className="checklist">
+          {checklist}
+        </div>
+      );
+    }
+  });
+
+  var CheckItem = React.createClass({
+    render: function() {
+      var checked = this.props.item.state === 'complete' ? 'checked' : '';
+      return (
+        <div className="checkbox">
+          <label>
+            <input type="checkbox" checked={checked}/>
+            {this.props.item.name}
+          </label>
+        </div>
       );
     }
   });
@@ -143,7 +188,7 @@ function initialize() {
   var router = new Router({
     '/board/:id': function(id){
       console.log('loading board',id);
-      Trello.boards.get(id, {cards:'open',lists:'open'}).then(function(board){
+      Trello.boards.get(id, {cards:'open',lists:'open',checklists:'all'}).then(function(board){
         React.renderComponent(
           <ListBox board={board}/>,
           document.getElementById('output')
