@@ -121,7 +121,7 @@ function initialize() {
         var checklists = this.props.checklists.filter(function(checklist) {
           if (checklist.idCard === card.id) return checklist;
         });
-        return <Card key={card.id} name={card.name} desc={card.desc} checklists={checklists}></Card>;
+        return <Card key={card.id} card={card} checklists={checklists}/>;
       }.bind(this));
       return (
         <ul className="card nodes">
@@ -134,13 +134,14 @@ function initialize() {
 
   var Card = React.createClass({
     render: function() {
-      var preStyle = "desc"+ (this.props.desc ? '' : ' none');
-      var html = marked(this.props.desc);
+      var preStyle = "desc"+ (this.props.card.desc ? '' : ' none');
+      var html = marked(this.props.card.desc);
       return (
         <li>
-          <div className="name">{this.props.name}</div>
+          <div className="name">{this.props.card.name}</div>
           <div className={preStyle} dangerouslySetInnerHTML={{__html:html }}/>
           <CheckLists checklists={this.props.checklists}/>
+          <AttachmentList attachments={this.props.card.attachments}/>
         </li>
       );
     }
@@ -186,6 +187,29 @@ function initialize() {
     }
   });
 
+  var AttachmentList = React.createClass({
+    render: function() {
+      var attaches = this.props.attachments.map(function(attach) {
+        return <Attachment attachment={attach}/>
+      });
+
+      return <ul className="attachments">{attaches}</ul>;
+    }
+  });
+
+  var Attachment = React.createClass({
+
+    render: function() {
+      var isImage = /\.jpg$|\.png$|\.gif$/.test(this.props.attachment.url);
+      if (isImage) {
+        return <li><a href={this.props.attachment.url}><img src={this.props.attachment.url}/>{this.props.attachment.name}</a></li>;
+      }
+      else {
+        return <li><a href={this.props.attachment.url}>{this.props.attachment.name}</a></li>;
+      }
+    }
+  });
+
   React.renderComponent(
     <BoardBox />,
     document.getElementById('boardList')
@@ -194,7 +218,7 @@ function initialize() {
   var router = new Router({
     '/board/:id': function(id){
       console.log('loading board',id);
-      Trello.boards.get(id, {cards:'open',lists:'open',checklists:'all'}).then(function(board){
+      Trello.boards.get(id, {cards:'open',lists:'open',checklists:'all',card_attachments:true}).then(function(board){
         React.renderComponent(
           <ListBox board={board}/>,
           document.getElementById('output')
