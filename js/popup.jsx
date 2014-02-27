@@ -1,54 +1,54 @@
 /**
 * @jsx React.DOM
 */
-var isLoggedIn = Trello.authorized();
-if (isLoggedIn) {
-  initialize();
-}
-else {
-  Trello.authorize({ interactive:false, success: initialize });
-}
-
-
-$(function() {
-  $("#connectLink").click(function(){
-    Trello.authorize({
-      type: "popup",
-      success: initialize,
-      name: 'Trellist'
-    })
-  });
-
-  $('#disconnect').on('click',function() {
-     Trello.deauthorize();
-     updateLoggedIn();
-  });
-
-});
-
-function updateLoggedIn(isLoggedIn) {
-  if (isLoggedIn){
-    console.log('logged in');
-    $(".loggedIn").show();
-    $(".loggedOut").hide();
-    $('#boardList').show();
-  } else {
-    console.log('not logged in');
-    $(".loggedIn").hide();
-    $(".loggedOut").show();
-    $('#boardList').hide();
+document.addEventListener('Trelloready', function () {
+  var isLoggedIn = Trello.authorized();
+  if (isLoggedIn) {
+    initialize();
   }
-  //$("#boardList").empty();
-}
+  else {
+    Trello.authorize({ interactive:false, success: initialize });
+  }
+
+
+//$(function() {
+  //$("#connectLink").click(function(){
+    //Trello.authorize({
+      //type: "popup",
+      //success: initialize,
+      //name: 'Trellist'
+    //})
+  //});
+
+  //$('#disconnect').on('click',function() {
+     //Trello.deauthorize();
+     //updateLoggedIn();
+  //});
+
+//});
+
+//function updateLoggedIn(isLoggedIn) {
+  //if (isLoggedIn){
+    //console.log('logged in');
+    //$(".loggedIn").show();
+    //$(".loggedOut").hide();
+    //$('#boardList').show();
+  //} else {
+    //console.log('not logged in');
+    //$(".loggedIn").hide();
+    //$(".loggedOut").show();
+    //$('#boardList').hide();
+  //}
+//}
 
 function initialize() {
-  Trello.members.get("me", function(member){
-    $(".fullName").text(member.fullName);
-    updateLoggedIn(Trello.authorized());
-  },
-  function() { debugger; });
+  //Trello.members.get("me", function(member){
+    //$(".fullName").text(member.fullName);
+    //updateLoggedIn(Trello.authorized());
+  //},
+  //function() { debugger; });
 
-  var BoardBox  = React.createClass({
+  /*var BoardBox  = React.createClass({
     getInitialState: function() {
       return {boards: []};
     },
@@ -92,7 +92,7 @@ function initialize() {
         </div>
       );
     }
-  });
+  });*/
 
   var ListBox = React.createClass({
     render: function() {
@@ -210,14 +210,31 @@ function initialize() {
     }
   });
 
-  React.renderComponent(
-    <BoardBox />,
-    document.getElementById('boardList')
-  );
+  //React.renderComponent(
+    //<BoardBox />,
+    //document.getElementById('boardList')
+  //);
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
 
-  var router = new Router({
-    '/board/:id': function(id){
-      console.log('loading board',id);
+    console.log(sender.tab ?
+                "from a content script:" + sender.tab.url :
+                "from the extension");
+
+      var boardName = request.boardName
+
+      Trello.get("members/me/boards", {filter: "open"}).then(function(boards) {
+
+        var board = boards.filter(function(b) {
+          return b.name === boardName;
+        })[0];
+
+      var id = board.id;
+
+  //var router = new Router({
+    //'/board/:id': function(id){
+      //console.log('loading board',id);
+
       Trello.boards.get(id, {cards:'open',lists:'open',checklists:'all',card_attachments:true}).then(function(board){
         React.renderComponent(
           <ListBox board={board}/>,
@@ -225,8 +242,14 @@ function initialize() {
         );
       }.bind(this));
 
-    }
-  });
-  router.init();
+    //}
+  //});
+  //router.init();
 
+      })
+    if (request)
+      sendResponse({message:'got it'});
+  });
 }
+
+});
