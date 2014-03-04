@@ -1,4 +1,4 @@
-var scripturl = 'https://api.trello.com/1/client.js?key='+localStorage.apikey;
+var scripturl = 'https://api.trello.com/1/client.js?key=01d542b2da7985e310301d7e1cbe5ec7'//+localStorage.apikey;
 $.getScript(scripturl, function(){
     var event = new Event('Trelloready');
     document.dispatchEvent(event);

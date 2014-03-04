@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+    <title>Options</title>
+    <link rel="stylesheet" href="js/vendor/bootstrap/dist/css/bootstrap.css"/>
+    <style>
+      footer {
+        padding-top: 40px;
+        padding-bottom: 40px;
+        margin-top: 100px;
+        color: #777;
+        text-align: center;
+        border-top: 1px solid #e5e5e5;
+      }
+      .authorize.active {
+        background-color: green;
+      }
+      .deauthorize.active {
+        background-color: red;
+      }
+    </style>
+</head>
+<body>
+    <section class="jumbotron">
+      <header class="container">
+        <h1>Trellist</h1>
+        <p>Display your Trello board in an printable list format</p>
+      </header>
+    </section>
+    <section class="options container">
+    </section>
+
+    <div id="status"></div>
+
+    <footer>
+      <div class="container">
+        <p>&copy; 2014 Phil Banres - <a href="https://github.com/pbarnes/trellist">Github Source</a></p>
+      </div>
+    </footer>
+
+    <script src="js/vendor/jquery/dist/jquery.js"></script>
+    <script src="js/vendor/underscore/underscore.js"></script>
+    <script src="js/vendor/backbone/backbone.js"></script>
+    <script src="js/client.js"></script>
+    <script src="js/options.js"></script>
+</body>
+</html>

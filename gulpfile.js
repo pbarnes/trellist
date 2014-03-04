@@ -1,8 +1,13 @@
 var gulp = require('gulp');
 var react = require('gulp-react');
+var watch = require('gulp-watch');
+var plumber = require('gulp-plumber');
 
 gulp.task('default', function () {
-    gulp.src('js/**.jsx')
-        .pipe(react())
-        .pipe(gulp.dest('js'));
+    watch({glob: 'js/**/*.jsx'}, function(files) {
+        return files
+          .pipe(plumber())
+          .pipe(react())
+          .pipe(gulp.dest('js'));
+    });
 });
