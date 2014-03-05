@@ -7,6 +7,5 @@ to run
 ========
 
 1. git clone
-2. npm install
-3. node index.js
-4. http://localhost:3000
+2. In Chrome, Tools -> Extensions -> Check (enable) Developer Mode
+3. In Chrome Extensions, click "Load Unpacked Extension..." and navigate to the dir you cloned
